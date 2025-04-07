@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #2c3e50;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+        canvas {
+            border: 2px solid #e74c3c;
+            border-radius: 5px;
+            background-color: #34495e;
+        }
+        .bouncing-letter {
+            display: inline-block;
+            animation: bounce 0.5s ease infinite;
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 48px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        #title {
+            margin-bottom: 20px;
+        }
+
+        /* Add different delays for each letter */
+        .bouncing-letter:nth-child(1) { animation-delay: 0.0s; }
+        .bouncing-letter:nth-child(2) { animation-delay: 0.1s; }
+        .bouncing-letter:nth-child(3) { animation-delay: 0.2s; }
+        .bouncing-letter:nth-child(4) { animation-delay: 0.3s; }
+        .bouncing-letter:nth-child(5) { animation-delay: 0.0s; }
+        .bouncing-letter:nth-child(6) { animation-delay: 0.1s; }
+        .bouncing-letter:nth-child(7) { animation-delay: 0.2s; }
+        .bouncing-letter:nth-child(8) { animation-delay: 0.3s; }
+        .bouncing-letter:nth-child(9) { animation-delay: 0.0s; }
+        .bouncing-letter:nth-child(10) { animation-delay: 0.1s; }
+        .bouncing-letter:nth-child(11) { animation-delay: 0.2s; }
+        .bouncing-letter:nth-child(12) { animation-delay: 0.3s; }
+        .bouncing-letter:nth-child(13) { animation-delay: 0.0s; }
+        #score {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        #restart {
+            display: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        #restart:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div id="title">
+        <span class="bouncing-letter">T</span>
+        <span class="bouncing-letter">H</span>
+        <span class="bouncing-letter">E</span>
+        <span class="bouncing-letter">&nbsp;</span>
+        <span class="bouncing-letter">S</span>
+        <span class="bouncing-letter">N</span>
+        <span class="bouncing-letter">A</span>
+        <span class="bouncing-letter">K</span>
+        <span class="bouncing-letter">E</span>
+        <span class="bouncing-letter">&nbsp;</span>
+        <span class="bouncing-letter">G</span>
+        <span class="bouncing-letter">A</span>
+        <span class="bouncing-letter">M</span>
+        <span class="bouncing-letter">E</span>
+    </div>
+    <div id="score">Score: 0</div>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <button id="restart">Restart Game</button>
+    <audio id="gulpSound" src="data:audio/mpeg;base64,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"></audio>
+    <script src="game.js"></script>
+</body>
+</html>
